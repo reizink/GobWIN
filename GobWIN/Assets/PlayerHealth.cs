@@ -7,54 +7,80 @@ public class PlayerHealth : MonoBehaviour
 {
     #region Variables
 
-    [Header("References")]
-    public NavMeshAgent agent;
-    public Transform destination;
-    public Transform target;
-
     [Header("Attributes")]
     [Range(0, 50)]
     public float DamageDealt = 10;
     [Range(0, 100)]
     public float Health = 100f;
-    public float Speed = 3.5f;
     public float HealOverTime = 1;
-
-    RaycastHit hit;
-    Ray ray;
-
+    public GameObject[] healthIndicators;
+    float max_health;
     #endregion
 
+    private void Start()
+    {
+        max_health = Health;
+    }
     // Update is called once per frame
     void Update()
     {
         HealthGen();
-
-        if(target == null)
-            agent.SetDestination(destination.position);
-        else
-            agent.SetDestination(target.position);
-
-        if (Input.GetMouseButtonDown(0))    // for standalone
-        { ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out hit, 100)) {
-                if (hit.transform.tag == "Enemy") {
-                    target = hit.transform;  //if enemy clicked, change target
-                }
-            }
+        ShowDamage();
+    }
+    public void ShowDamage()
+    {
+        if (Health < (4 * (max_health / 5)))
+        {
+            healthIndicators[0].SetActive(false);
+            healthIndicators[1].SetActive(true);
+            healthIndicators[2].SetActive(true);
+            healthIndicators[3].SetActive(true);
+            healthIndicators[4].SetActive(true);
+        }
+        if (Health < (3 * (max_health / 5)))
+        {
+            healthIndicators[1].SetActive(false);
+            healthIndicators[2].SetActive(true);
+            healthIndicators[3].SetActive(true);
+            healthIndicators[4].SetActive(true);
+        }
+        if (Health < (2 * (max_health / 5)))
+        {
+            healthIndicators[2].SetActive(false);
+            healthIndicators[3].SetActive(true);
+            healthIndicators[4].SetActive(true);
+        }
+        if (Health < (max_health / 5))
+        {
+            healthIndicators[3].SetActive(false);
+            healthIndicators[4].SetActive(true);
+        }
+        if (Health <= 0)
+        {
+            healthIndicators[4].SetActive(false);
         }
     }
-
     void HealthGen()
     {
         if (Health <= 0)
         {
-            agent.speed = 0;
             Debug.Log("You have died.");
+            transform.GetChild(0).GetComponent<Animator>().SetBool("IsDead", true);
+            StartCoroutine(Die());
         }
         else if(Health <= 80)
         {
             Health += HealOverTime * Time.deltaTime;
         }
+    }
+    IEnumerator Die()
+    {
+        yield return new WaitForSeconds(1f);
+        Destroy(gameObject);
+
+    }
+    public void doDamage(int Damage)
+    {
+        Health -= Damage * Time.deltaTime;
     }
 }

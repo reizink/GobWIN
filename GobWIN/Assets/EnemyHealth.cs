@@ -24,20 +24,27 @@ public class EnemyHealth : MonoBehaviour
     public float distance;
 
     private GameObject playerObject;
-
+    public GameObject money;
+    public GameObject wood;
+    public GameObject explodyCrystal;
+    int spawnnumber;
+    public GameObject[] healthIndicators;
+    float max_heath;
     #endregion
 
     // Start is called before the first frame update
     void Start()
     {
+        max_heath = Health;
         playerObject = findClosestEnemy();
     }
 
     // Update is called once per frame
     void Update()
     {
+        transform.eulerAngles = new Vector3(transform.eulerAngles.x, 0, 0);
         HealthGen();
-
+        ShowDamage();
         if (target == null)
             agent.SetDestination(destination.position);
         else
@@ -49,8 +56,43 @@ public class EnemyHealth : MonoBehaviour
         {
             target = findClosestEnemy();
         }*/
-        transform.eulerAngles = new Vector3(transform.eulerAngles.x, 0, 0);
+
     }
+
+    //Created by Andrew Johnson
+    //Purpose is to show the damage from the makeshift health bar
+    public void ShowDamage()
+    {
+        if (Health <(4 * (max_heath/5)))
+        {
+            healthIndicators[0].SetActive(false) ;
+            healthIndicators[1].SetActive(true);
+            healthIndicators[2].SetActive(true);
+            healthIndicators[3].SetActive(true);
+            healthIndicators[4].SetActive(true);
+        }
+        if (Health <(3 * (max_heath/5)))
+        {
+            healthIndicators[1].SetActive(false) ;
+            healthIndicators[2].SetActive(true);
+            healthIndicators[3].SetActive(true);
+            healthIndicators[4].SetActive(true);
+        } if (Health <(2 * (max_heath/5)))
+        {
+            healthIndicators[2].SetActive(false) ;
+            healthIndicators[3].SetActive(true);
+            healthIndicators[4].SetActive(true);
+        } if (Health <(max_heath/5))
+        {
+            healthIndicators[3].SetActive(false) ;
+            healthIndicators[4].SetActive(true);
+        } if (Health <= 0)
+        {
+            healthIndicators[4].SetActive(false) ;
+        }
+    }
+    //Created By Andrew Johnson
+    //Purpose: called to deal damage to the enemy
     public void DealDamage(int damage)
     {
         Health -= damage * Time.deltaTime;
@@ -61,8 +103,8 @@ public class EnemyHealth : MonoBehaviour
         {
             agent.speed = 0;
             Debug.Log("Enemy Destroyed");
-            GetComponent<BoxCollider>().enabled = false;
-            transform.GetChild(0).GetComponent<Animator>().SetBool("IsDead", true);
+            StartCoroutine(die());
+
         }
         else if (Health <= 80)
         {
@@ -94,5 +136,26 @@ public class EnemyHealth : MonoBehaviour
         }
 
         return closestEnemy;
+    }
+    //Created by Andrew Johnson
+    //Purpose: to carry out all neccessary action to kill the object
+    IEnumerator die()
+    {
+        GetComponent<BoxCollider>().enabled = false;
+        transform.GetChild(0).GetComponent<Animator>().SetBool("IsDead", true);
+        yield return new WaitForSeconds(2f);
+        spawnnumber = Random.Range(1, 3);
+        switch (spawnnumber) {
+            case 1:
+                Instantiate(money, transform.position, money.transform.rotation);
+                break;
+            case 2:
+                Instantiate(wood, transform.position, wood.transform.rotation);
+                break;
+            case 3:
+                Instantiate(explodyCrystal, transform.position, explodyCrystal.transform.rotation);
+                break;
+        }
+        Destroy(gameObject);
     }
 }

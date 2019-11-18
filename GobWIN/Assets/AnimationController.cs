@@ -89,8 +89,8 @@ public class AnimationController : MonoBehaviour
     }
     public void AttackingAnimation(Vector3 direction)
     {
-
-        if(Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
+        print(direction);
+        if(Mathf.Abs(direction.x) > Mathf.Abs(direction.z))
         {
             if(direction.x > 0)
             {
@@ -101,13 +101,13 @@ public class AnimationController : MonoBehaviour
                 animator.SetBool("IsAttackingLeft", true);
             }
         }
-        if (Mathf.Abs(direction.x) < Mathf.Abs(direction.y))
+        if (Mathf.Abs(direction.x) < Mathf.Abs(direction.z))
         {
-            if(direction.y > 0)
+            if(direction.z > 0)
             {
                 animator.SetBool("IsAttacking", true);
             }
-            if(direction.y< 0)
+            if(direction.z< 0)
             {
                 animator.SetBool("IsAttackingDown", true);
             }

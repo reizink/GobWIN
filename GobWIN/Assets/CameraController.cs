@@ -21,6 +21,23 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(transform.position.z > -2.57f)
+        {
+            transform.position = new Vector3(transform.position.x, transform.position.y, -2.57f);
+        }
+        if(transform.position.z < -11.5f)
+        {
+            transform.position = new Vector3(transform.position.x, transform.position.y, -11.5f);
+
+        }
+        if (transform.position.x > 2.3f)
+        {
+            transform.position = new Vector3(2.3f, transform.position.y, transform.position.z);
+        }
+        if (transform.position.x < -1.5f)
+        {
+            transform.position = new Vector3(-1.5f, transform.position.y, transform.position.z);
+        }
         if (Input.mousePosition.y > scrollHeight)
         {
             transform.Translate(Vector3.up * scrollspeed*Time.deltaTime);
